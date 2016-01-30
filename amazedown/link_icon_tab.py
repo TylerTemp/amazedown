@@ -20,20 +20,20 @@ logger = logging.getLogger('MARKDOWN.link_icon_tab')
 
 
 # pylint: disable=invalid-name, too-few-public-methods
-class NewTabMixin(object):
+class LinkIconMixin(object):
     """Common extension logic; mixed into the existing classes."""
 
     _IMG_RE = re.compile(''.join(('^', IMAGE_LINK_RE, '$|^', IMAGE_REFERENCE_RE, '$|^<img\s.*?>$')))
 
     def __init__(self, *args, **kwargs):
         self._host = kwargs.pop('host', None)
-        super(NewTabMixin, self).__init__(*args, **kwargs)
+        super(LinkIconMixin, self).__init__(*args, **kwargs)
         logger.debug(self._host)
 
     def handleMatch(self, match):
         """Handles a match on a pattern; used by existing implementation."""
         
-        elem = super(NewTabMixin, self).handleMatch(match)
+        elem = super(LinkIconMixin, self).handleMatch(match)
         if self._host is None:
             return elem
 
@@ -50,49 +50,49 @@ class NewTabMixin(object):
         return elem
 
 
-class NewTabLinkPattern(NewTabMixin, LinkPattern):
+class LinkIconLinkPattern(LinkIconMixin, LinkPattern):
     """Links to URLs, e.g. [link](https://duck.co)."""
     pass
 
 
 
-class NewTabReferencePattern(NewTabMixin, ReferencePattern):
+class LinkIconReferencePattern(LinkIconMixin, ReferencePattern):
     """Links to references, e.g. [link][1]."""
     pass
 
 
 
-class NewTabAutolinkPattern(NewTabMixin, AutolinkPattern):
+class LinkIconAutolinkPattern(LinkIconMixin, AutolinkPattern):
     """Autommatic links, e.g. <duck.co>."""
     pass
 
 
-class NewTabExtension(Extension):
+class LinkIconTabExtension(Extension):
     """Modifies HTML output to open links in a new tab."""
 
     def __init__(self, **kwargs):
         self.config = {'host': [kwargs.get('host', None), 'host name']}
-        super(NewTabExtension, self).__init__(**kwargs)
+        super(LinkIconTabExtension, self).__init__(**kwargs)
 
     def extendMarkdown(self, md, md_globals):
         host = self.getConfig('host', None)
 
         md.inlinePatterns['link'] = \
-            NewTabLinkPattern(LINK_RE, md, host=host)
+            LinkIconLinkPattern(LINK_RE, md, host=host)
 
         md.inlinePatterns['reference'] = \
-            NewTabReferencePattern(REFERENCE_RE, md, host=host)
+            LinkIconReferencePattern(REFERENCE_RE, md, host=host)
 
         md.inlinePatterns['short_reference'] = \
-            NewTabReferencePattern(SHORT_REF_RE, md, host=host)
+            LinkIconReferencePattern(SHORT_REF_RE, md, host=host)
 
         md.inlinePatterns['autolink'] = \
-            NewTabAutolinkPattern(AUTOLINK_RE, md, host=host)
+            LinkIconAutolinkPattern(AUTOLINK_RE, md, host=host)
 
 
 def makeExtension(**kwargs):
     """Loads the extension."""
-    return NewTabExtension(host=kwargs.get('host', None))
+    return LinkIconTabExtension(host=kwargs.get('host', None))
 
 if __name__ == '__main__':
     import markdown

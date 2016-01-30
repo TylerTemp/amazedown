@@ -3,13 +3,15 @@ Link for AmazeUI
 
 
 Some codes are from: [markdown-newtab](https://github.com/Undeterminant/markdown-newtab/)
+
+Load this AFTER link_image
 """
 import re
 import logging
 from markdown import Extension
 from markdown.inlinepatterns import \
     LinkPattern, ReferencePattern, AutolinkPattern, \
-    LINK_RE, REFERENCE_RE, SHORT_REF_RE, AUTOLINK_RE, IMAGE_LINK_RE, IMAGE_REFERENCE_RE
+    LINK_RE, REFERENCE_RE, SHORT_REF_RE, IMAGE_LINK_RE, IMAGE_REFERENCE_RE
 
 try:
     from urllib.parse import urlsplit
@@ -32,19 +34,21 @@ class LinkIconMixin(object):
 
     def handleMatch(self, match):
         """Handles a match on a pattern; used by existing implementation."""
-        
-        elem = super(LinkIconMixin, self).handleMatch(match)
         if self._host is None:
-            return elem
+            return None
+
+        elem = super(LinkIconMixin, self).handleMatch(match)
 
         text = elem.text
         if elem is not None and not self._IMG_RE.match(text):
             link = elem.get('href')
             parsed = urlsplit(link)
             if parsed.netloc in (self._host, ''):
+                logger.debug('inner link %s', link)
                 elem.set('class', 'am-icon-link')
                 elem.text = ' ' + text
             else:
+                logger.debug('external link %s', link)
                 elem.text += ' <span class="am-icon-external-link"></span>'
                 elem.set('target', '_blank')
         return elem
@@ -77,17 +81,40 @@ class LinkIconTabExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         host = self.getConfig('host', None)
 
-        md.inlinePatterns['link'] = \
-            LinkIconLinkPattern(LINK_RE, md, host=host)
+        md.inlinePatterns.add(
+            'link_icon_tab_link',
+            LinkIconLinkPattern(LINK_RE, md, host=host),
+            '<link')
 
-        md.inlinePatterns['reference'] = \
-            LinkIconReferencePattern(REFERENCE_RE, md, host=host)
+        md.inlinePatterns.add(
+            'link_icon_tab_reference',
+            LinkIconReferencePattern(REFERENCE_RE, md, host=host),
+            '<reference'
+        )
 
-        md.inlinePatterns['short_reference'] = \
-            LinkIconReferencePattern(SHORT_REF_RE, md, host=host)
+        md.inlinePatterns.add(
+            'link_icon_tab_short_reference',
+            LinkIconReferencePattern(SHORT_REF_RE, md, host=host),
+            '<short_reference'
+        )
 
-        md.inlinePatterns['autolink'] = \
-            LinkIconAutolinkPattern(AUTOLINK_RE, md, host=host)
+        md.inlinePatterns.add(
+            'link_icon_tab_autolink',
+            LinkIconReferencePattern(SHORT_REF_RE, md, host=host),
+            '<autolink'
+        )
+
+        # md.inlinePatterns['link'] = \
+        #     LinkIconLinkPattern(LINK_RE, md, host=host)
+        #
+        # md.inlinePatterns['reference'] = \
+        #     LinkIconReferencePattern(REFERENCE_RE, md, host=host)
+        #
+        # md.inlinePatterns['short_reference'] = \
+        #     LinkIconReferencePattern(SHORT_REF_RE, md, host=host)
+        #
+        # md.inlinePatterns['autolink'] = \
+        #     LinkIconAutolinkPattern(AUTOLINK_RE, md, host=host)
 
 
 def makeExtension(**kwargs):

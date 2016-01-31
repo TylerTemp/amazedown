@@ -91,7 +91,10 @@ class LinkIconMixin(object):
                 continue
 
             logger.debug('%s/%s - %s', host, k, icon)
-            if host.endswith(k):
+            if host == k:
+                return icon
+
+            if host.endswith('.' + k):
                 return icon
 
         return None
@@ -188,7 +191,8 @@ if __name__ == '__main__':
         '[ins](https://instagram.com/p)\n\n'
         '[tjc](https://together.jolla.com)\n\n'
         '[blogjolla](https://blog.jolla.com)\n\n'
-        '<tylertempdev@gmail.com>'
+        '<tylertempdev@gmail.com>\n\n'
+        '[supportjolla](https://isupportjolla.com)\n\n'
     )
 
     LinkIconMixin.brands['jolla.com'] = 'iconfont icon-jolla'

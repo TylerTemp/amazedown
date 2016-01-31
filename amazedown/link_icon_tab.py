@@ -11,8 +11,9 @@ import logging
 from collections import OrderedDict
 from markdown import Extension
 from markdown.inlinepatterns import \
-    LinkPattern, ReferencePattern, AutolinkPattern, \
-    LINK_RE, REFERENCE_RE, SHORT_REF_RE, IMAGE_LINK_RE, IMAGE_REFERENCE_RE
+    LinkPattern, ReferencePattern, AutolinkPattern, AutomailPattern, \
+    LINK_RE, REFERENCE_RE, SHORT_REF_RE, IMAGE_LINK_RE, IMAGE_REFERENCE_RE, \
+    AUTOMAIL_RE
 
 try:
     from urllib.parse import urlsplit
@@ -54,28 +55,33 @@ class LinkIconMixin(object):
             self.brands[self._host] = self.brands['']
 
         super(LinkIconMixin, self).__init__(*args, **kwargs)
-        logger.debug(self.brands)
 
 
     def handleMatch(self, match):
         """Handles a match on a pattern; used by existing implementation."""
 
         elem = super(LinkIconMixin, self).handleMatch(match)
+        logger.debug(self.type())
+        is_mail = self.type() == 'LinkIconAutomailPattern'
 
         if elem is not None and not self._IMG_RE.match(elem.text):
             logger.debug('handled %s', elem.get('href', None))
             text = elem.text
             link = elem.get('href')
-            parsed = urlsplit(link)
-            netloc = parsed.netloc
-            icon_class = self.get_brand_icon(netloc)
-            logger.debug('%s -> %s', netloc, icon_class)
+            if is_mail:
+                icon_class = 'am-icon-envelope'
+            else:
+                parsed = urlsplit(link)
+                netloc = parsed.netloc
+                icon_class = self.get_brand_icon(netloc)
+                logger.debug('%s -> %s', netloc, icon_class)
+
             if icon_class is not None:
                 logger.debug('pre-head icon %s', link)
                 elem.set('class', icon_class)
                 elem.text = ' ' + text
 
-            if netloc not in (self._host, ''):
+            if not is_mail and netloc not in (self._host, ''):
                 logger.debug('external link %s', link)
                 elem.text += ' <span class="am-icon-external-link"></span>'
                 elem.set('target', '_blank')
@@ -117,6 +123,10 @@ class LinkIconAutolinkPattern(LinkIconMixin, AutolinkPattern):
     pass
 
 
+class LinkIconAutomailPattern(LinkIconMixin, AutomailPattern):
+    pass
+
+
 class LinkIconTabExtension(Extension):
     """Modifies HTML output to open links in a new tab."""
 
@@ -154,6 +164,13 @@ class LinkIconTabExtension(Extension):
             LinkIconReferencePattern(SHORT_REF_RE, md,
                                      host=host, brands=brands),
             '<autolink'
+        )
+
+        md.inlinePatterns.add(
+            'link_icon_tab_automail',
+            LinkIconAutomailPattern(AUTOMAIL_RE, md,
+                                    host=host, brands=brands),
+            '<automail'
         )
 
         # md.inlinePatterns['link'] = \

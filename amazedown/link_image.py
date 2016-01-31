@@ -26,6 +26,9 @@ class LinkImageMixin(object):
         """Handles a match on a pattern; used by existing implementation."""
 
         elem = super(LinkImageMixin, self).handleMatch(m)
+        if elem is None:
+            return None
+
         mime, _ = mimetypes.guess_type(elem.get('href'))
         if not mime or not mime.startswith('image'):
             logger.debug('not image link wrapper')

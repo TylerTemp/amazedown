@@ -119,7 +119,8 @@ class ListGalleryProcesserProcesser(BlockProcessor):
 
         small = small or 1
 
-        root = etree.SubElement(parent, 'ul')
+        wrapper = etree.SubElement(parent, 'div')
+        root = etree.SubElement(wrapper, 'ul')
         root.set('data-am-widget', 'gallery')
 
         classes = ['am-gallery', 'am-gallery-bordered',

@@ -1,7 +1,6 @@
 import re
 from markdown.blockprocessors import BlockQuoteProcessor
 from markdown import Extension
-from markdown import util
 import logging
 
 logger = logging.getLogger('MARKDOWN.quote_by')
@@ -97,28 +96,6 @@ if __name__ == '__main__':
 > —here
 
 """
-    md = """
-> 基于芬兰日报的各方消息，Sailfish系统开发方Jolla公司陷入财政危机。
-> 据今日消息，公司将随之开始大量裁员。
->
-> 目前有超过100名员工在为Jolla工作。宣传主管Juhani Lassila已确认将有超过一半的员工
-> 将被裁员。Lassila表示，不管困难如何，他们都打算保证寄送用户的Jolla平板。
-> 裁员并不是这件事的影响因素。
->
-> _“我们将在近期发布财政状况的变更信息。我们目前暂时使用一轮轮资，这轮资金本应在11月中止。”_
-> Lassila如是说。
->
-> 在2014到2015年，Jolla已经有4起总共近1000欧元的支付拖欠纪录。
->
-> Suomen perintätoimisto（收税员）和失业保险基金（政府基金）的Intrum Justitia（收税员）
-> 对此提出了起诉。根据资金注册信息显示，这些费用还有一项尚未偿还：在2014年已经降到500欧元
-> 的失业保险基金未偿贷款。[^1]
->
-> Jolla宣传主管Juhani Lassila称他并不清楚这些纪录。
->
-> -- 原文自芬兰晨报，Taneli Koponen
-> -- 英文翻译自Review Jolla，Simo Ruoho
-        """
 
     result = markdown.markdown(md, extensions=[makeExtension()])
     print(result)

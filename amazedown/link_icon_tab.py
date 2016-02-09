@@ -38,7 +38,8 @@ class LinkIconMixin(object):
         ('twitter.com', 'am-icon-twitter'),
         ('facebook.com', 'am-icon-facebook'),
         ('github.com', 'am-icon-github'),
-        ('instagram.com', 'am-icon-instagram')
+        ('instagram.com', 'am-icon-instagram'),
+        ('reddit.com', 'am-icon-reddit-alien'),
     ))
 
     def __init__(self, *args, **kwargs):

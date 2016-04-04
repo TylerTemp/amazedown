@@ -40,6 +40,7 @@ class LinkIconMixin(object):
         ('github.com', 'am-icon-github'),
         ('instagram.com', 'am-icon-instagram'),
         ('reddit.com', 'am-icon-reddit-alien'),
+        ('paypal.com', 'am-icon-paypal'),
     ))
 
     def __init__(self, *args, **kwargs):
